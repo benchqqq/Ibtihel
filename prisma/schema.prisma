@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Couple {
+  id        String   @id @default(cuid())
+  name1     String   // الاسم الأول (أنت)
+  name2     String   // الاسم الثاني (ابتهال)
+  password  String   // كلمة السر المشتركة
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  messages    Message[]
+  memories    Memory[]
+  wishes      Wish[]
+  surprises   Surprise[]
+  gameScores  GameScore[]
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  content   String
+  sender    String   // اسم المرسل
+  createdAt DateTime @default(now())
+  coupleId  String
+  couple    Couple   @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+}
+
+model Memory {
+  id        String   @id @default(cuid())
+  title     String
+  content   String?
+  imageUrl  String?
+  createdAt DateTime @default(now())
+  coupleId  String
+  couple    Couple   @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+}
+
+model Wish {
+  id        String   @id @default(cuid())
+  content   String
+  fulfilled Boolean  @default(false)
+  createdAt DateTime @default(now())
+  coupleId  String
+  couple    Couple   @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+}
+
+model Surprise {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  revealed  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  coupleId  String
+  couple    Couple   @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+}
+
+model GameScore {
+  id        String   @id @default(cuid())
+  gameName  String
+  player    String
+  score     Int
+  createdAt DateTime @default(now())
+  coupleId  String
+  couple    Couple   @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+}
